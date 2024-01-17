@@ -49,20 +49,24 @@ function App() {
     }
   }
 
-  const getNonce = async (address?: string) => {
-    const res = await fetch(host + '/signer/nonce' +( address ? ('?address=' + address) : ''), {
+  const getNonce = async () => {
+    const res = await fetch(host + '/auth/wallet/oauth/nonce', {
       method: 'get',
+      headers: {
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzA1NDg1ODIyLCJleHAiOjE3MDU0ODk0MjJ9.evmcwdCwScYm-RRs1ZtEmnSQzqChPNfMRP5g2K0hoyI'
+      }
     })
     const json = await res.json()
-    return json.nonce
+    return json.data
   }
 
   const verify = async (params: any) => {
-    const res = await fetch(host + '/signer/verify', {
+    const res = await fetch(host + '/auth/wallet/oauth/verify', {
       method: 'post',
       body: JSON.stringify(params),
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzA1NDg1ODIyLCJleHAiOjE3MDU0ODk0MjJ9.evmcwdCwScYm-RRs1ZtEmnSQzqChPNfMRP5g2K0hoyI'
       }
     })
     const json = await res.json()
@@ -73,9 +77,9 @@ function App() {
     const provider = new ethers.BrowserProvider(ethereum)
     const signer = await provider.getSigner()
     const address = signer.address
-    const nonce = await getNonce(address)
+    const nonce = await getNonce()
     const signature = await signer.signMessage(nonce)
-    await verify({ address, signature, nonce })
+    await verify({ address, signature })
   }
 
   return (
