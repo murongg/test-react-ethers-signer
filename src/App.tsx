@@ -49,12 +49,9 @@ function App() {
     }
   }
 
-  const getNonce = async () => {
-    const res = await fetch(host + '/auth/wallet/oauth/nonce', {
+  const getNonce = async (address:string) => {
+    const res = await fetch(host + '/auth/wallet/oauth/nonce?address='+address, {
       method: 'get',
-      headers: {
-        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiaWF0IjoxNzA1NDg1ODIyLCJleHAiOjE3MDU0ODk0MjJ9.evmcwdCwScYm-RRs1ZtEmnSQzqChPNfMRP5g2K0hoyI'
-      }
     })
     const json = await res.json()
     return json.data
@@ -77,7 +74,7 @@ function App() {
     const provider = new ethers.BrowserProvider(ethereum)
     const signer = await provider.getSigner()
     const address = signer.address
-    const nonce = await getNonce()
+    const nonce = await getNonce(address)
     const signature = await signer.signMessage(nonce)
     await verify({ address, signature })
   }
