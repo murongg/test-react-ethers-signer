@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { ethers } from 'ethers'
 // import axios from 'axios'
 import './App.css'
@@ -49,8 +49,8 @@ function App() {
     }
   }
 
-  const getNonce = async (address:string) => {
-    const res = await fetch(host + '/auth/wallet/oauth/nonce?address='+address, {
+  const getNonce = async (address: string) => {
+    const res = await fetch(host + '/auth/wallet/oauth/nonce?address=' + address, {
       method: 'get',
     })
     const json = await res.json()
@@ -76,8 +76,15 @@ function App() {
     const address = signer.address
     const nonce = await getNonce(address)
     const signature = await signer.signMessage(nonce)
-    await verify({ address, signature })
+    await verify({ address, signature, redirect_url: 'http://127.0.0.1:5173/' })
   }
+
+  useEffect(() => {
+    const url = new URL(window.location.href);
+    for (const key of url.searchParams.keys()) {
+      console.log(url.searchParams.get(key))
+    }
+  }, [])
 
   return (
     <div >
